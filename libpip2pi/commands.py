@@ -128,7 +128,7 @@ def file_to_package(file, basedir=None):
     if len(split) != 2 or not split[1]:
         raise InvalidFilePackageName(file, basedir)
 
-    return (to_safe_name(split[0]), to_safe_rest(split[1]))
+    return (to_safe_name(split[0]), split[0], to_safe_rest(split[1]))
 
 def try_int(x):
     try:
@@ -323,7 +323,7 @@ def _dir2pi(option, argv):
         pkg_basename = os.path.basename(file)
         if pkg_basename.startswith("."):
             continue
-        pkg_name, pkg_rest = file_to_package(pkg_basename, pkgdir)
+        pkg_name, original_name, pkg_rest = file_to_package(pkg_basename, pkgdir)
 
         pkg_dir_name = pkg_name
         if option.normalize_package_names:
@@ -337,7 +337,7 @@ def _dir2pi(option, argv):
             try_symlink(option, pkg_dir_name, pkgdirpath("simple", normalize_pip67(pkg_name)))
             try_symlink(option, pkg_dir_name, pkgdirpath("simple", pkg_name))
 
-        pkg_new_basename = "-".join([pkg_name, pkg_rest])
+        pkg_new_basename = "-".join([original_name, pkg_rest])
         symlink_target = os.path.join(pkg_dir, pkg_new_basename)
         symlink_source = os.path.join("../../", pkg_basename)
         if option.use_symlink:
